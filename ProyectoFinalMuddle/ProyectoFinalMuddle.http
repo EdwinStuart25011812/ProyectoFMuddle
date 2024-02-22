@@ -1,0 +1,10 @@
+@ProyectoFinalMuddle_HostAddress = https://localhost:7276
+
+GET {{ProyectoFinalMuddle_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{ProyectoFinalMuddle_HostAddress}}/weatherforecast
+
+###
