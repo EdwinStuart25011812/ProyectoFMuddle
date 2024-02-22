@@ -13,36 +13,7 @@ namespace ProyectoFinalMuddle.Controllers
     public class UsuarioController : ControllerBase
 
     {
-        /*
-        private readonly ApplicationContext _context;
-
-        public UsuarioController(ApplicationContext context)
-        {
-            _context = context;
-        }
-
-        [HttpGet("GetAllUsuarios")]
-        public async Task<IActionResult> GetAllUsuarios()
-        {
-            try
-            {
-                // Consulta todos los usuarios incluyendo las asignaciones asociadas
-                var usuarios = await _context.Usuarios.Include(u => u.Asignaciones).ToListAsync();
-
-                // Si no se encontraron usuarios, devolver un mensaje de error
-                if (usuarios == null || usuarios.Count == 0)
-                {
-                    return NotFound("No se encontraron usuarios.");
-                }
-
-                // Devolver la lista de usuarios con sus asignaciones asociadas
-                return Ok(usuarios);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Se produjo un error al recuperar los usuarios: {ex.Message}");
-            }
-        */
+    
 
 
 
@@ -53,22 +24,70 @@ namespace ProyectoFinalMuddle.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("get All user")]
             public async Task<ActionResult<List<Usuario>>> GetAllUsuarios()
             {
-                var usuario = await _context.Usuarios.ToListAsync();
-                return Ok(usuario);
+                var users = await _context.Usuarios.ToListAsync();
+                return Ok(users);
             }
 
-        [HttpGet("{id}")]
+        [HttpGet("getForId")]
        
-        public async Task<ActionResult<List<Usuario>>> GetUser(int id)
+        public async Task<ActionResult<Usuario>> GetUser(int id)
         {
-            var usuario = await _context.Usuarios.ToListAsync();
-            return Ok(usuario);
+            var user = await _context.Usuarios.FindAsync(id);
+            if (user is null)
+
+                return NotFound("Not found user");
+           
+            return Ok(user);
         }
 
 
+        [HttpPost]
+
+        public async Task<ActionResult<List<Usuario>>> AddUser(Usuario updateUser)
+        {
+            var dbuser = await _context.Usuarios.FindAsync(updateUser.ID_usuario);
+            if (dbuser is null)
+
+                return NotFound("Not found user");
+            dbuser.nombre=updateUser.nombre;
+            dbuser.correo_electronico = updateUser.correo_electronico;
+            dbuser.contraseña = updateUser.contraseña;
+            dbuser.tipo_usuario = updateUser.tipo_usuario;
+
+
+            await _context.SaveChangesAsync();
+
+            return Ok(await _context.Usuarios.ToListAsync());
+        }
+
+       /* [HttpPut]
+
+        public async Task<ActionResult<List<Usuario>>> UpdateUser(Usuario user)
+        {
+            _context.Usuarios.Add(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(await _context.Usuarios.ToListAsync());
+        }
+       */
+
+        
+        [HttpDelete]
+        
+        public async Task<ActionResult<List<Usuario>>> DeleteUser(int id)
+        {
+            var dbuser = await _context.Usuarios.FindAsync(id);
+            if (dbuser is null)
+
+            return NotFound("Not found user");
+            _context.Usuarios.Remove(dbuser);
+            await _context.SaveChangesAsync();
+
+            return Ok(await _context.Usuarios.ToListAsync());
+        }
 
     }
 }
